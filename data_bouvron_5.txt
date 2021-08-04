@@ -1,0 +1,11 @@
+species	n	mode
+Pomu	18	helio
+Labi	6	helio
+Anfr	1	helio
+Nahe	2	helio
+Zalo	4	helio
+Pomu	32	tigmo
+Labi	10	tigmo
+Anfr	381	tigmo
+Nahe	30	tigmo
+Zalo	45	tigmo

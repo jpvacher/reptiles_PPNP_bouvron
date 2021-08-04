@@ -1,0 +1,5 @@
+"Podarcis muralis"	50
+"Lacerta bilineata"	16
+"Anguis fragilis"	382
+"Natrix helvetica"	32
+"Zamenis longissimus"	49
