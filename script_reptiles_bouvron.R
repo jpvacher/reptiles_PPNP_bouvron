@@ -1,11 +1,11 @@
 x=c("here","tidyverse","ggpubr", "gridExtra") #object that contains the packages that will be used in the script
-lapply(x,library, character.only=T) #call the packages the function "library"
+lapply(x,library, character.only=T) #call the packages with the function "library"
 
 ################################################
 #BARPLOT - NUMBER OF OBSERVATIONS
 ################################################
 
-df=read_tsv("data_gaetan_1.txt", col_names=F) #read the data table
+df=read_tsv("data_bouvron_1.txt", col_names=F) #read the data table
 df #check what it looks like
 df[,3]=round((df[,2]*100)/sum(df[,2]),0) #add a column with the percentage of the number of observation per species
 colnames(df)=c("species","n","per") #rename the columns
@@ -33,7 +33,7 @@ dev.off() #save the figure in the current directory
 #PLOT SPECIES RICHNESS BY PLATE
 ################################
 
-df2=read_tsv("data_gaetan_2.txt") #read the data table
+df2=read_tsv("data_bouvron_2.txt") #read the data table
 df2 #check what it looks like
 
 #build a new table with species richness per plate
@@ -73,7 +73,7 @@ chisq.test(df2$n_sp) #chisquare test to test whether the richness significantly 
 #NUMBER OF INDIVIDUALS/SPECIES/PLATE
 ################################################
 
-df3=read_tsv("data_gaetan_3.txt") #read the data table
+df3=read_tsv("data_bouvron_3.txt") #read the data table
 df3 #check what it looks like
 df3<-mutate(df3,plaque_ID=as.factor(plaque_ID), species=as.factor(species)) #change the class of the variables "plaque_ID" and "species" to factor.
 
@@ -206,7 +206,7 @@ tukey
 #TEST AGE CLASSES
 ########################
 
-df4=read_tsv("data_gaetan_4.txt") #read the data table
+df4=read_tsv("data_bouvron_4.txt") #read the data table
 df4 #check what it looks like
 df4<-mutate(df4, age=as.factor(age), milieu=as.factor(milieu)) #set the variables "age" and "milieu" as factor
 
@@ -265,7 +265,7 @@ shapiro.test(aov.pr$res) #The residuals fit a normal distribution
 #TEST THIGMOTHERMY VS. HELIOTHERMY
 ####################################
 
-df5=read_tsv("data_gaetan_5.txt") #read the data table
+df5=read_tsv("data_bouvron_5.txt") #read the data table
 df5 #Check what it looks like
 df5<-mutate(df5, species=as.factor(species), mode=as.factor(mode)) #set the class of "species" and "mode" to factor
 
@@ -334,7 +334,7 @@ pairwise.wilcox.test(df7$dist, df7$species)
 #
 #P value adjustment method: holm 
 
-#We see that the distances covered by Anguis fragilis significantly differ from Zamenis longissimus
+#We can see that the distances covered by Anguis fragilis significantly differ from Zamenis longissimus
 
 my_comp=list(c("anfr","nahe"),c("anfr","zalo"),c("nahe","zalo"))
 
