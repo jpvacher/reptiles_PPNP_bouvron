@@ -1,5 +1,5 @@
 x=c("here","tidyverse","ggpubr", "gridExtra") #object that contains the packages that will be used in the script
-lapply(x,library, character.only=T) #call the packages the function "library"
+lapply(x,library, character.only=T) #call the packages with the function "library"
 
 ################################################
 #BARPLOT - NUMBER OF OBSERVATIONS
