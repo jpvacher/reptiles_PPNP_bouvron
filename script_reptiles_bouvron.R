@@ -334,7 +334,7 @@ pairwise.wilcox.test(df7$dist, df7$species)
 #
 #P value adjustment method: holm 
 
-#We see that the distances covered by Anguis fragilis significantly differ from Zamenis longissimus
+#We can see that the distances covered by Anguis fragilis significantly differ from Zamenis longissimus
 
 my_comp=list(c("anfr","nahe"),c("anfr","zalo"),c("nahe","zalo"))
 
