@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 x=c("here","tidyverse","ggpubr", "gridExtra","rgdal", "rgeos", "raster", "sp","sf") #object that contains the packages that will be used in the script
+=======
+x=c("here","tidyverse","ggpubr", "gridExtra") #object that contains the packages that will be used in the script
+>>>>>>> 4e5bce14e4a08f12a8340675e597b80775fabcf5
 lapply(x,library, character.only=T) #call the packages with the function "library"
 
 ################################################
