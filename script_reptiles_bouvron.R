@@ -53,14 +53,14 @@ df2<-df2 %>%
 	mutate(n_sp=rowSums(across(where(is.numeric)))) #adds a column "n_sp" that sums the "1" values for each row where the variables are as numeric
 	
 #Plot species richness by plate
-p2<-ggplot(df2, aes(x=reorder(plaque_ID,-n_sp), y=n_sp, fill=milieu))+ #define the data source and the aesthetics of the plot, as well as the color fill of the bars according to the variable "milieu"
-	geom_bar(stat="identity",color="black", size=0.2,)+ #call barplot
-	scale_fill_grey(start=.7, end=.9,name="Habitat", labels=c("Lisière","Prairie"))+ #fill the bars with two shades of grey according to habitat type
-	labs(x="Plaques", y="Richesse spécifique", title="(B)")+ #provide axes titles and main title
-	theme(plot.title=element_text(size=10), axis.title=element_text(size=8), axis.text.x=element_text(size=6), axis.text.y=element_text(size=7))+ #set text size
-	theme(legend.title=element_text(size=7), legend.text=element_text(size=6))+ #set legend size
-	theme(legend.key.size=unit(0.2,"cm"))+ #set legend elements size
-	theme(legend.position=c(0.9,0.9)) #set legent position
+#p2<-ggplot(df2, aes(x=reorder(plaque_ID,-n_sp), y=n_sp, fill=milieu))+ #define the data source and the aesthetics of the plot, as well as the color fill of the bars according to the variable "milieu"
+#	geom_bar(stat="identity",color="black", size=0.2,)+ #call barplot
+#	scale_fill_grey(start=.7, end=.9,name="Habitat", labels=c("Lisière","Prairie"))+ #fill the bars with two shades of grey according to habitat type
+#	labs(x="Plaques", y="Richesse spécifique", title="(B)")+ #provide axes titles and main title
+#	theme(plot.title=element_text(size=10), axis.title=element_text(size=8), axis.text.x=element_text(size=6), axis.text.y=element_text(size=7))+ #set text size
+#	theme(legend.title=element_text(size=7), legend.text=element_text(size=6))+ #set legend size
+#	theme(legend.key.size=unit(0.2,"cm"))+ #set legend elements size
+#	theme(legend.position=c(0.9,0.9)) #set legent position
 	
 #some extra descriptive statistics on this data set
 sd(df2$n_sp) #standard deviation of the number of species
@@ -337,6 +337,7 @@ kruskal.test(dist~species, data=df6)
 
 #No significant difference between groups.
 
+
 #############################
 #CUMULATIVE COVERED DISTANCE
 #############################
@@ -380,22 +381,13 @@ p6=ggplot(data=df7, aes(x=species, y=dist))+ #define the data source and the aes
 	theme(plot.title=element_text(size=10), axis.title=element_text(size=8), axis.text.x=element_text(size=7), axis.text.y=element_text(size=7))+ #set text size
 	scale_x_discrete(labels=c("anfr"=expression(paste(italic("A. fragilis"))), "nahe"=expression(paste(italic("N. helvetica"))),"zalo"=expression(paste(italic("Z. longissimus"))))) #change the x-axis tick mark labels
 
-##############
-#FINAL FIGURE
-##############
-
-#We cluster all the figures in the same panel
-#jpeg(file="figure4.jpg", width=17, height=17, units="cm", res=300) #save the figure as a jpg file
-pdf(file="figure4.pdf")
-grid.arrange(p1,p2,p4,p5,p6,ncol=2,nrow=3) #group all the plots within a single figure
-dev.off() #save the figure in the current directory
-
 ##########################################
 #MAP OF THE PLATES ACCORDING TO RICHNESS
 ##########################################
 df8=read_tsv("coord_plaques.txt") %>% #we read the data
 	dplyr::select(-X8) %>% #we delete the last column
 	rename(plaque_ID=ID_plaque) %>% #we rename the column “plaque_ID”
+	mutate(plaque_ID=as.factor(plaque_ID)) %>% #change the type of plaque_ID
 	left_join(df2) %>% #we join the table with the table that countains the species for each plate
 	dplyr::select(plaque_ID, lat, lon, Pomu, Labi, Anfr, Nahe, Zalo) %>% #we select the columns of interest
 	mutate(Pomu=if_else(Pomu>0, 1, 0), Labi=if_else(Labi>0,1,0), Anfr=if_else(Anfr>0,1,0), Nahe=if_else(Nahe>0,1,0), Zalo=if_else(Zalo>0,1,0)) %>% #we transform the numbers into occurrences (1) for each species
@@ -415,11 +407,34 @@ polys=Polygons(list(poly),1) #add slots to the polygon
 spolys=SpatialPolygons(list(polys)) #transform to a spatial polygon
 proj4string(spolys)=CRS("+init=epsg:4326") #we assign a coordinate system that corresponds to WGS84 (epsg:4326)
 
-ggplot(spolys)+ #plot the polygon of the meadow
-	geom_polygon(aes(x=long, y=lat), color="forestgreen",fill="lightgreen", lwd=5)+ #plot the polygon of the meadow
+p2=ggplot(spolys)+ #plot the polygon of the meadow
+	geom_polygon(aes(x=long, y=lat), color="forestgreen",fill="lightgreen", lwd=2)+ #plot the polygon of the meadow
 	geom_point(data=data.frame(coordinates(df8)), aes(x=lon, y=lat, size=df8$rich), fill=24,color="black", shape=21)+ #plot the points of the coverboards
-	labs(size="Richesse spécifique\npar plaque")+ #change legend title
+	labs(size="Richesse spécifique\npar plaque", title="(B)")+ #change legend title
 	xlab("Longitude (degrés décimaux WGS84)")+ #change x-axis title
 	ylab("Latitude (degrés décimaux WGS84)")+ #change y-axis title
-theme(legend.title.align=0.5,legend.key=element_rect(fill="transparent"),legend.title=element_text(size=9),axis.title=element_text(size=9), axis.text=element_text(size=8))+ #adjust legend parameters
+theme(plot.title=element_text(size=10),legend.title.align=0.5,legend.key=element_rect(fill="transparent"),legend.text=element_text(size=6),legend.title=element_text(size=6),axis.title=element_text(size=5), axis.text=element_text(size=5))+ #adjust legend parameters
 	coord_equal(ratio=2) #adjust the ratio of the plot
+
+#if we want to save the plot alone as a pdf file
+#pdf(file="Richness_coverboard.pdf") #create the pdf file
+#ggplot(spolys)+ #plot the polygon of the meadow
+#	geom_polygon(aes(x=long, y=lat), color="forestgreen",fill="lightgreen", lwd=5)+ #plot the polygon of the meadow
+#	geom_point(data=data.frame(coordinates(df8)), aes(x=lon, y=lat, size=df8$rich), fill=24,color="black", shape=21)+ #plot the points of the coverboards
+#	labs(size="Richesse spécifique\npar plaque")+ #change legend title
+#	xlab("Longitude (degrés décimaux WGS84)")+ #change x-axis title
+#	ylab("Latitude (degrés décimaux WGS84)")+ #change y-axis title
+#theme(legend.title.align=0.5,legend.key=element_rect(fill="transparent"),legend.title=element_text(size=9),axis.title=element_text(size=9), axis.text=element_text(size=8))+ #adjust legend parameters
+#	coord_equal(ratio=2) #adjust the ratio of the plot
+#dev.off() #save the file in the working directory
+
+##############
+#FINAL FIGURE
+##############
+
+#We cluster all the figures in the same panel
+#jpeg(file="figure4.jpg", width=17, height=17, units="cm", res=300) #save the figure as a jpg file
+pdf(file="figure4.pdf")
+grid.arrange(p1,p2,p4,p5,p6,ncol=2,nrow=3) #group all the plots within a single figure
+dev.off() #save the figure in the current directory
+
