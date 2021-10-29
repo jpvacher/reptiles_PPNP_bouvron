@@ -337,6 +337,7 @@ kruskal.test(dist~species, data=df6)
 
 #No significant difference between groups.
 
+
 #############################
 #CUMULATIVE COVERED DISTANCE
 #############################
