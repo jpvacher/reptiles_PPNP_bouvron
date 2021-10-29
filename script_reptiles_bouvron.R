@@ -1,4 +1,4 @@
-x=c("here","tidyverse","ggpubr", "gridExtra") #object that contains the packages that will be used in the script
+x=c("here","tidyverse","ggpubr", "gridExtra","rgdal", "rgeos", "raster", "sp","sf") #object that contains the packages that will be used in the script
 lapply(x,library, character.only=T) #call the packages with the function "library"
 
 ################################################
@@ -69,6 +69,27 @@ chisq.test(df2$n_sp) #chisquare test to test whether the richness significantly 
 #4 : 4
 #5 : 4
 
+
+########################
+#NUMBER OF OBSERVATIONS
+########################
+
+sumT=sum(df$n) #total number of osbervations
+sumC=sum(df2$Pomu)+sum(df2$Labi)+sum(df2$Anfr)+sum(df2$Nahe)+sum(df2$Zalo) #number of observations under coverboards
+round(sumC*100/sumT,0) #percentage of observations under coverboards
+#83
+round((sumT-sumC)*100/sumT,0) #percentage of observations in heliothermy
+#17
+sumC.h=sum(df2[df2$milieu=="lisiere",]$Pomu)+sum(df2[df2$milieu=="lisiere",]$Labi)+sum(df2[df2$milieu=="lisiere",]$Anfr)+sum(df2[df2$milieu=="lisiere",]$Nahe)+sum(df2[df2$milieu=="lisiere",]$Zalo) #number of observations under coverboards placed in the hedges
+sumC.m=sum(df2[df2$milieu=="prairie",]$Pomu)+sum(df2[df2$milieu=="prairie",]$Labi)+sum(df2[df2$milieu=="prairie",]$Anfr) +sum(df2[df2$milieu=="prairie",]$Nahe)+sum(df2[df2$milieu=="prairie",]$Zalo) #number of observations under coverboards placed in the meadow
+C.h=nrow(df2[df2$milieu=="lisiere",]) #number of plates placed in the hedges
+C.m= nrow(df2[df2$milieu=="prairie",]) #number of coverboards placed in the meadow
+round((sumC.h/C.h)*100/((sumC.h/C.h)+(sumC.m/C.m)),0) #percentage of observations under coverboards places in the hedges
+#77
+round((sumC.m/C.m)*100/((sumC.h/C.h)+(sumC.m/C.m)),0) #percentage of observations under coverboards places in the meadow
+#23
+
+
 ################################################
 #NUMBER OF INDIVIDUALS/SPECIES/PLATE
 ################################################
@@ -78,12 +99,12 @@ df3 #check what it looks like
 df3<-mutate(df3,plaque_ID=as.factor(plaque_ID), species=as.factor(species)) #change the class of the variables "plaque_ID" and "species" to factor.
 
 #Plot the mean number of observations by plate for each species with a boxplot
-p3<-ggplot(df3, aes(x=species, y=n))+ #define the data source and the aesthetics of the plot
-	geom_boxplot()+ #call boxplot
-	theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1))+ #rotate the x-axis tick mark labels of 45°
-	theme(plot.title=element_text(size=10), axis.title=element_text(size=8), axis.text.x=element_text(size=7), axis.text.y=element_text(size=7))+ #set text size
-	scale_x_discrete(labels=c("Pomu"=expression(italic("P. muralis")), "Labi"=expression(italic("L. bilineata")),"Anfr"=expression(italic("A. fragilis")),"Zalo"=expression(italic("Z. longissimus")),"Nahe"=expression(italic("N. helvetica"))))+ #change the x-axis tick mark labels
-	labs(x="Espèces", y="Nombre d'observations par plaque", title="(C)") #set axes titles and main title
+#p3<-ggplot(df3, aes(x=species, y=n))+ #define the data source and the aesthetics of the plot
+#	geom_boxplot()+ #call boxplot
+#	theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1))+ #rotate the x-axis tick mark labels of 45°
+#	theme(plot.title=element_text(size=10), axis.title=element_text(size=8), axis.text.x=element_text(size=7), axis.text.y=element_text(size=7))+ #set text size
+#	scale_x_discrete(labels=c("Pomu"=expression(italic("P. muralis")), "Labi"=expression(italic("L. bilineata")),"Anfr"=expression(italic("A. fragilis")),"Zalo"=expression(italic("Z. longissimus")),"Nahe"=expression(italic("N. helvetica"))))+ #change the x-axis tick mark labels
+#	labs(x="Espèces", y="Nombre d'observations par plaque", title="(C)") #set axes titles and main title
 
 #one-way ANOVA test to test if there is a significant difference between species
 res.aov=aov(n~species, data=df3)
@@ -227,7 +248,7 @@ p5=ggplot(data=df4_temp, aes(x=age, y=sum, fill=age))+ #define the data source a
 	ylim(0,90)+ #set the range of the y-axis
 	geom_text(aes(label=paste(sum, "%")),size=2,position=position_dodge(width=0.9),vjust=-0.25)+ #set the text bloc that will provide the percentage value above each bar
 	facet_grid(.~milieu, labeller=as_labeller(c(prairie="Prairies",lisiere="Lisières")))+ #set the two barplot per habitat type ("milieu") with manuel labels
-	labs(x="Type de milieu", y="% du nombre d'occurrences", title="(E)", width=0.5)+ #set axes titles
+	labs(x="Type de milieu", y="% du nombre d'occurrences", title="(D)", width=0.5)+ #set axes titles
 	theme(legend.position="none")+ #do not display the legend on the right
 	theme(plot.title=element_text(size=10), axis.title=element_text(size=8), axis.text.x=element_text(size=7), axis.text.y=element_text(size=7)) #set text size
 
@@ -292,7 +313,7 @@ summary(df6) #check what it looks like
 #boxplot representation of the data set
 p4=ggplot(data=df6, aes(x=factor(df6$species,levels=c("labi", "pomu", "anfr","nahe","zalo")), y=dist))+ #define the data source and the aesthetics of the plot
 	geom_boxplot()+ #call boxplot
-	labs(x="Espèces", y="Distance à la lisière (m)", title="(D)")+ #set axes and main titles
+	labs(x="Espèces", y="Distance à la lisière (m)", title="(C)")+ #set axes and main titles
 	theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1))+ #rotate the x-axis tick mark labels of 45°
 	theme(plot.title=element_text(size=10), axis.title=element_text(size=8), axis.text.x=element_text(size=7), axis.text.y=element_text(size=7))+ #set text size
 	scale_x_discrete(labels=c("anfr"=expression(paste(italic("A. fragilis"))), "labi"=expression(paste(italic("L. bilineata"))),"nahe"=expression(paste(italic("N. helvetica"))),"pomu"=expression(paste(italic("P. muralis"))),"zalo"=expression(paste(italic("Z. longissimus"))))) #change the x-axis tick mark labels
@@ -341,7 +362,7 @@ my_comp=list(c("anfr","nahe"),c("anfr","zalo"),c("nahe","zalo"))
 #boxplot of the data
 p6=ggplot(data=df7, aes(x=species, y=dist))+ #define the data source and the aesthetics of the plot
 	geom_boxplot()+ #call boxplot
-	labs(x="Espèces", y="Distance parcourue cumulée (m)", title="(F)")+ #set axes and main titles
+	labs(x="Espèces", y="Distance parcourue cumulée (m)", title="(E)")+ #set axes and main titles
 	stat_compare_means(label="p.signif", size=3,label.y=250, method="wilcox.test", ref.group="anfr")+ #add significance marks on the plot with A. fragilis as reference point
 	stat_compare_means(method="kruskal",label.y=350, size=3)+ #add the value of the Kruskal-Wallis test on top of the plot
 	ylim(0,400)+ #set y-axis range
@@ -354,6 +375,41 @@ p6=ggplot(data=df7, aes(x=species, y=dist))+ #define the data source and the aes
 ##############
 
 #We cluster all the figures in the same panel
-jpeg(file="figure4.jpg", width=17, height=17, units="cm", res=300) #save the figure as a jpg file
-grid.arrange(p1,p2,p3,p4,p5,p6,ncol=2,nrow=3) #group all the plots within a single figure
+#jpeg(file="figure4.jpg", width=17, height=17, units="cm", res=300) #save the figure as a jpg file
+pdf(file="figure4.pdf")
+grid.arrange(p1,p2,p4,p5,p6,ncol=2,nrow=3) #group all the plots within a single figure
 dev.off() #save the figure in the current directory
+
+##########################################
+#MAP OF THE PLATES ACCORDING TO RICHNESS
+##########################################
+df8=read_tsv("coord_plaques.txt") %>% #we read the data
+	dplyr::select(-X8) %>% #we delete the last column
+	rename(plaque_ID=ID_plaque) %>% #we rename the column “plaque_ID”
+	left_join(df2) %>% #we join the table with the table that countains the species for each plate
+	dplyr::select(plaque_ID, lat, lon, Pomu, Labi, Anfr, Nahe, Zalo) %>% #we select the columns of interest
+	mutate(Pomu=if_else(Pomu>0, 1, 0), Labi=if_else(Labi>0,1,0), Anfr=if_else(Anfr>0,1,0), Nahe=if_else(Nahe>0,1,0), Zalo=if_else(Zalo>0,1,0)) %>% #we transform the numbers into occurrences (1) for each species
+	rowwise()%>% #we select row after row
+	mutate(rich=sum(Pomu, Labi, Anfr, Nahe, Zalo)) %>% #we add a richness column which sums the number of species for each row 
+	dplyr::select(plaque_ID, lat, lon, rich) #we select the columns of interest
+	
+coordinates(df8)=~lon+lat #we transform the dataframe into a GIS object
+proj4string(df8)=CRS("+init=epsg:4326") #we assign a coordinate system that corresponds to WGS84 (epsg:4326)
+df8 #check how it looks like
+
+poly=read.table("coord_prairie.txt", h=T) #read the coordinates that delimit the meadow
+coordinates(poly)=~lon+lat #we transform the dataframe into a GIS object
+proj4string(poly)=CRS("+init=epsg:4326") #we assign a coordinate system that corresponds to WGS84 (epsg:4326)
+poly=Polygon(poly) #create a polygon out of the points
+polys=Polygons(list(poly),1) #add slots to the polygon
+spolys=SpatialPolygons(list(polys)) #transform to a spatial polygon
+proj4string(spolys)=CRS("+init=epsg:4326") #we assign a coordinate system that corresponds to WGS84 (epsg:4326)
+
+ggplot(spolys)+ #plot the polygon of the meadow
+	geom_polygon(aes(x=long, y=lat), color="forestgreen",fill="lightgreen", lwd=5)+ #plot the polygon of the meadow
+	geom_point(data=data.frame(coordinates(df8)), aes(x=lon, y=lat, size=df8$rich), fill=24,color="black", shape=21)+ #plot the points of the coverboards
+	labs(size="Richesse spécifique\npar plaque")+ #change legend title
+	xlab("Longitude (degrés décimaux WGS84)")+ #change x-axis title
+	ylab("Latitude (degrés décimaux WGS84)")+ #change y-axis title
+theme(legend.title.align=0.5,legend.key=element_rect(fill="transparent"),legend.title=element_text(size=9),axis.title=element_text(size=9), axis.text=element_text(size=8))+ #adjust legend parameters
+	coord_equal(ratio=2) #adjust the ratio of the plot
