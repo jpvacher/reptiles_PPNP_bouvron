@@ -31,7 +31,7 @@ p1<-ggplot(data=df, aes(x=species, y=per))+ #define the data source and the aest
 	theme(plot.title=element_text(size=10), axis.title=element_text(size=8), axis.text.x=element_text(size=7), axis.text.y=element_text(size=7)) #adjust the size of the titles and tick mark labels on both axes
 
 #Plot with actual values
-jpeg(file="barplot_count.jpg", width=17, height=17, units="cm", res=200) #save the figure as a jpg file
+jpeg(file="barplot_count.jpg", width=17, height=17, units="cm", res=200) #create a jpg file
 ggplot(data=df, aes(x=species, y=n))+ #define the data source and the aesthetics of the plot
 	geom_bar(stat="identity")+ #barplot representation
 	labs(x="Espèces", y="Nombre d'observations")+ #titles of the axes
